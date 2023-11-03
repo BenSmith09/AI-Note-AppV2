@@ -34,7 +34,11 @@ const CreateNoteDialog = (props: Props) => {
           </DialogDescription>
         </DialogHeader>
         <form>
-          <Input placeholder="Name..." />
+          <Input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Name..."
+          />
 
           <div className="h-4"></div>
           <div className="flex items-center">
