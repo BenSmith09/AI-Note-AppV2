@@ -2,18 +2,21 @@
 import React from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
-import { EditorState } from "@tiptap/pm/state";
+
 import TipTapMenuBar from "./TipTapMenuBar";
 import { Button } from "./ui/button";
 import { useDebounce } from "@/lib/useDebounce";
 import { useMutation } from "@tanstack/react-query";
+import Text from "@tiptap/extension-text";
 import axios from "axios";
 import { NoteType } from "@/lib/db/schema";
 
 type Props = { note: NoteType };
 
 const TipTapEditor = ({ note }: Props) => {
-  const [editorState, setEditorState] = React.useState(note.editorState || "");
+  const [editorState, setEditorState] = React.useState(
+    note.editorState || `<h1>${note.name}</h1>`
+  );
 
   const saveNote = useMutation({
     mutationFn: async () => {
@@ -24,9 +27,19 @@ const TipTapEditor = ({ note }: Props) => {
       return response.data;
     },
   });
+  const customText = Text.extend({
+    addKeyboardShortcuts() {
+      return {
+        "Shift-a": () => {
+          console.log("activate ai");
+          return true;
+        },
+      };
+    },
+  });
   const editor = useEditor({
     autofocus: true,
-    extensions: [StarterKit],
+    extensions: [StarterKit, customText],
     content: editorState,
     onUpdate: ({ editor }) => {
       setEditorState(editor.getHTML());
